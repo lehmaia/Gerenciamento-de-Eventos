@@ -1,0 +1,20 @@
+Ambiente de desenvolvimento: Xampp;
+localhost/phpmyadmin/
+
+------------------------------
+
+CREATE DATABASE QUARTZO_AZUL;
+
+-----------------------------
+
+USE QUARTZO_AZUL;
+
+CREATE TABLE Usuario 
+( 
+nome VARCHAR(50) COLLATE utf8mb4_unicode_ci NOT NULL, 
+email VARCHAR(50) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE, 
+senha VARCHAR(220) COLLATE utf8mb4_unicode_ci NOT NULL,  
+telefone VARCHAR(11) COLLATE utf8mb4_unicode_ci NOT NULL,
+id INTEGER PRIMARY KEY AUTO_INCREMENT,
+recuperar_senha varchar(220) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+)ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
