@@ -7,4 +7,4 @@ Leticia Cordeiro Maia
 Bianca Pereira Leão
 Daniel Figueira Cajé
 Arthur Alves Lino Candido
-Wendell Gabriel de Oliveira Marques# Gerenciamento-de-Eventos
+Wendell Gabriel de Oliveira Marques
