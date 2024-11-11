@@ -18,3 +18,13 @@ telefone VARCHAR(11) COLLATE utf8mb4_unicode_ci NOT NULL,
 id INTEGER PRIMARY KEY AUTO_INCREMENT,
 recuperar_senha varchar(220) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 )ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE agenda (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    evento_id INT,
+    titulo VARCHAR(100),
+    descricao TEXT,
+    hora_inicio TIME,
+    hora_fim TIME,
+    FOREIGN KEY (evento_id) REFERENCES eventos(id) ON DELETE CASCADE //ainda não fiz a tabela eventos
+);

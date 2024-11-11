@@ -1,0 +1,167 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Kaisei HarunoUmi';
+}
+
+body {
+    background-color: #f5f5f5;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #d6e6f3;
+    color: #486591;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    /*border: 2px solid #fff;*/
+}
+
+.company-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.dropdown {
+    position: relative;
+}
+
+.dropbtn {
+    background-color: transparent;
+    border: none;
+    color: #486591;
+    cursor: pointer;
+    font-size: 19px;
+    text-decoration: none;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    color: #333;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    min-width: 150px;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+.dropdown-content a {
+    display: block;
+    padding: 8px;
+    text-decoration: none;
+    color: #000000;
+    transition: background 0.3s;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Estilos para o perfil */
+.profile-dropdown {
+    position: relative;
+}
+
+.account-label {
+    margin-right: 10px;
+    font-size: 1rem;
+    display: block;
+    padding: 0 0 10px 0;
+    text-decoration: none;
+    color: #666666;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #fff;
+}
+
+.profile-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    color: #333;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    min-width: 250px;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.profile-pic-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.user-name {
+    font-weight: bold;
+    display: block;
+    color: #000000;
+}
+
+.user-email {
+    font-size: 0.9rem;
+    color: #696969;
+    display: block;
+}
+
+.profile-content a {
+    display: block;
+    padding: 8px;
+    text-decoration: none;
+    color: #000000;
+    transition: background 0.3s;
+}
+
+.profile-content a:hover {
+    background-color: #f1f1f1;
+}
+
+.profile-dropdown:hover .profile-content {
+    display: block;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 10px 0;
+}

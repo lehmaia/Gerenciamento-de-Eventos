@@ -1,40 +1,43 @@
 <?php 
 include_once ("database/conn.php");
-
-if(isset($_POST['email']))
+if(isset($_POST['email']) || isset($_POST['senha']))
 {
-    $nome = $_POST['nome'];
-    $email = $_POST['email'];
-    $senha = $_POST['senha'];
-    // $ddd = $_POST['DDD'];
-    $telefone = $_POST['telefone'];
-
-    //Inserindo dados na Primeira Tabela
-    $sql1 = "INSERT INTO Usuario (nome,email,senha,telefone)
-    VALUES ('$nome','$email','$senha','$telefone')";
-
-    if($conn->query($sql1)==TRUE)
+    if(strlen($_POST['email']) == 0)
     {
-        //echo "Dados inseridos com sucesso na tabela2";
-        echo '<script type="text/javascript">';
-        //depois tirar o echo abaixo
-        echo 'alert("Usuário cadastrado com sucesso!");';
-        // mandar para a tela de menu: echo 'window.location.href =".php";';
-        echo '</script>';
+        echo "Preencha o campo E-mail";
+    }
+    else if(strlen($_POST['senha']) == 0)
+    {
+        echo "Preencha o campo senha";
     }
     else
     {
-        //echo "Erro ao inserir dados na tebala2";
-        echo '<script type="text/javascript">';
-        echo 'alert("Falha ao cadastrar usuário!");';
-        echo 'window.location.href ="";';
-        echo '</script>';
+        $email = $conn->real_escape_string($_POST['email']);
+        $senha = $conn->real_escape_string($_POST['senha']);
+
+        $sql_code = "SELECT * FROM usuario WHERE  email = '$email' AND senha = '$senha'";
+        $sql_query = $conn->query($sql_code) or die("Falha na execução do código SQL: " . $conn->error);
+
+        $quantidade = $sql_query->num_rows;
+        
+        if($quantidade == 1)
+        {
+            $usuario = $sql_query->fetch_assoc();
+
+            if(!isset($_SESSION))
+            {
+                session_start();
+            }
+
+            $_SESSION['id'] = $usuario['id'];
+
+            header("Location: Agenda.php");
+        }
+        else
+        {
+            echo "<script>alert('Falha ao logar! CPF ou senha incorretos')</script>";
+        }
     }
-    
-}
-else
-{
-    //echo "Erro ao enviar dados para o banco de dados";
 }
 ?>
 
@@ -46,7 +49,7 @@ else
         <link rel="shortcut icon" type="image/x-icon" href="img/IconeLogo.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Quartzo Azul</title>
-        <link rel="stylesheet" href="Usuario.css">
+        <link rel="stylesheet" href="Entrada.css">
         </head>
     <body>
         <div class="container">
@@ -54,10 +57,10 @@ else
                 <img src="img/LogoNome.png">
             </div>
             <div class="form">
-                <form id="usuario" method="POST" onsubmit="return ValidarSenha()">
+                <form id="usuario" method="POST">
                     <div class="form-header">
                         <div class="tittle">
-                            <h1>Criar Conta</h1>
+                            <h1>Login</h1>
                         </div>
 
                         <div class="returnbutton">
@@ -70,34 +73,18 @@ else
                     
                     <div class="input-group">
                         <div class="input-box">
-                            <lable for="nome">Nome Completo</lable>
-                            <input id="nome" type="text" name="nome" placeholder="Digite seu nome" required>
-                        </div>
-
-                        <div class="input-box">
                             <lable for="email">E-mail</lable>
                             <input id="email" type="email" name="email" placeholder="Digite seu email" required>
                         </div>
 
                         <div class="input-box">
-                            <lable for="telefone">Telefone</lable>
-                            <input id="telefone" type="tel" name="telefone" placeholder="ex: (11) 99999-9999" required>
+                            <lable for="senha">Senha</lable>
+                            <input id="senha" type="password" name="senha" placeholder="Digite sua senha" required>
                         </div>
-
-                        <div class="input-box">
-                            <lable for="senha">Crie uma senha</lable>
-                            <input id="senha" type="password" name="senha" placeholder="Crie uma senha" method="POST" oninput="ValidarSenha()" required>
-                        </div>
-                        <p id="requisito-limite" class="requisito">+ 8 caracteres
-                        <p id="requisito-maiuscula" class="requisito">1 letra maiúscula
-                        <p id="requisito-minuscula" class="requisito">1 letra minúscula
-                        <p id="requisito-numero" class="requisito">1 número
-                        <p id="requisito-especial" class="requisito">1 caractere especial
-                        <p id="mensagem" class=""></p>
                     </div>
-
-                    <div class="cadastro-button">
-                        <input type="submit" value="Cadastrar" name="cadUsuario"></input>
+                    <a href="EsqueceuSenha.php">Esqueci minha senha</a>
+                    <div class="button">
+                        <input type="submit" value="Entrar" name="login"></input>
                     </div>
                   </form>
             </div>
