@@ -90,15 +90,22 @@ function loadAgendamentos() {
     xhr.open("POST", "Agenda.php", true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     
-    // Envia a data selecionada como parâmetro
+    // Enviar a data selecionada como parâmetro
     xhr.send("selectedDate=" + formatDate(selectedDate));
     
     xhr.onload = function() {
         if (xhr.status === 200) {
-            // Atualiza o container de agendamentos com a resposta
+            // Atualizar o container de eventos com a resposta do PHP
             mainContainer.innerHTML = xhr.responseText;
         }
     };
+}
+
+function selectDay(dayCard, date) {
+    document.querySelectorAll('.day-card').forEach(card => card.classList.remove('selected'));
+    dayCard.classList.add('selected');
+    selectedDate = date;
+    loadAgendamentos(); // Atualizar os agendamentos para a data selecionada
 }
 
 
@@ -134,36 +141,3 @@ addIcon.onclick = () => openAgendamento.style.display = 'flex';
 
 // Inicializar calendário e lista de dias
 loadDays();
-
-//Buscar endereço a partir do cep (tela criar evento)
-function buscarEndereco() {
-    const cep = document.getElementById("cep").value.replace(/\D/g, '');
-
-    // Verifica se o CEP tem 8 dígitos
-    if (cep.length !== 8) {
-        alert("CEP inválido!");
-        return;
-    }
-
-    // URL da API ViaCEP
-    const url = `https://viacep.com.br/ws/${cep}/json/`;
-
-    // Faz a requisição usando fetch
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            if (data.erro) {
-                alert("CEP não encontrado!");
-                return;
-            }
-
-            // Preenche os campos com os dados retornados pela API
-            document.getElementById("cidade").value = data.localidade;
-            document.getElementById("rua").value = data.logradouro;
-            document.getElementById("bairro").value = data.bairro;
-        })
-        .catch(error => {
-            console.error("Erro ao buscar o CEP:", error);
-            alert("Erro ao buscar o CEP. Tente novamente.");
-        });
-}

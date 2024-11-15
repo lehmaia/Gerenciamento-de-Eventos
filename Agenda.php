@@ -1,6 +1,11 @@
 <?php
-// Incluir a conexão com o banco de dados
-include_once ('database/conn.php');
+if (!empty($_GET['id']) && is_numeric($_GET['id'])) {
+    include_once("database/conn.php");
+
+    $evento_id = isset($_GET['id']) ? (int)$_GET['id'] : 0; // Pega o ID do evento logado
+
+    // Verifica o ID
+    //echo "ID do evento: " . $evento_id;
 
 // Verificar se os dados foram enviados
 if(isset($_POST['data'])){
@@ -10,20 +15,20 @@ if(isset($_POST['data'])){
     $hora_inicio = $_POST['inicio'];
     $hora_fim = $_POST['fim'];
 
-    // Preparar a query para inserir os dados na tabela 'agenda'
-    $sql = "INSERT INTO agenda (titulo, dia, hora_inicio, hora_fim) 
-              VALUES ('$titulo', '$data', '$hora_inicio', '$hora_fim')";
+    // Usando prepared statement para evitar SQL Injection
+        $stmt = $conn->prepare("INSERT INTO agenda (titulo, dia, hora_inicio, hora_fim, evento_id) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssi", $titulo, $data, $hora_inicio, $hora_fim, $evento_id);
 
-    if($conn->query($sql)==TRUE)
-    {
-        //echo "Dados inseridos com sucesso na agenda";
-        header("Location: Agenda.php");
-        exit();  // Importante para garantir que o script pare por aqui
+        if ($stmt->execute()) {
+            header("Location: Agenda.php?id=$evento_id");
+            exit();
+        } else {
+            echo "Erro ao criar evento: " . $conn->error;
+        }
     }
-    else
-    {
-        //echo "Erro ao inserir dados na agenda";
-    }
+} else {
+    echo "ID do usuário inválido.";
+    exit();
 }
 ?>
 
@@ -102,29 +107,35 @@ if(isset($_POST['data'])){
     <div id="days-container"></div>
     <div id="main-container">
         <?php
-                // Preparar a consulta para buscar os agendamentos somente daquele dia
-                $sql = "SELECT titulo, hora_inicio, hora_fim FROM agenda";
-                $result = $conn->query($sql);
+        // Verificar se a data foi recebida via POST
+        if (isset($_POST['selectedDate'])) {
+            $selectedDate = $_POST['selectedDate'];
             
-                // Verificar se há resultados
-                if ($result && $result->num_rows > 0) {
-                    // Loop para exibir cada evento
-                    while ($row = $result->fetch_assoc()) {
-                        // Formatar os horários para exibir apenas hora e minutos
-                        $hora_inicio_formatada = date("H:i", strtotime($row["hora_inicio"]));
-                        $hora_fim_formatada = date("H:i", strtotime($row["hora_fim"]));
-
-                        echo '<div class="evento-container">';
-                        echo '<div class="evento-titulo">' . htmlspecialchars($row["titulo"]) . '</div>';
-                        echo '<div class="evento-horarios">';
-                        echo '<div class="evento-horario">Início: ' . $hora_inicio_formatada . '</div>';
-                        echo '<div class="evento-horario">Término: ' . $hora_fim_formatada . '</div>';
-                        echo '</div>';
-                        echo '</div>';
-                    }
-                } else {
-                    echo "<p>Nenhum evento encontrado.</p>";
+            // Formatando a data para o formato do banco de dados (Y-m-d)
+            $selectedDate = DateTime::createFromFormat('d.m.Y', $selectedDate)->format('Y-m-d');
+            
+            // Consulta para buscar eventos na data selecionada
+            $sql = "SELECT titulo, hora_inicio, hora_fim FROM agenda WHERE dia = '$selectedDate'";
+            $result = $conn->query($sql);
+            
+            // Verificar se há eventos e exibi-los
+            if ($result && $result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $hora_inicio_formatada = date("H:i", strtotime($row["hora_inicio"]));
+                    $hora_fim_formatada = date("H:i", strtotime($row["hora_fim"]));
+        
+                    echo '<div class="evento-container">';
+                    echo '<div class="evento-titulo">' . htmlspecialchars($row["titulo"]) . '</div>';
+                    echo '<div class="evento-horarios">';
+                    echo '<div class="evento-horario">Início: ' . $hora_inicio_formatada . '</div>';
+                    echo '<div class="evento-horario">Término: ' . $hora_fim_formatada . '</div>';
+                    echo '</div>';
+                    echo '</div>';
                 }
+            } else {
+                echo "<p>Nenhum evento encontrado para essa data.</p>";
+            }
+        }
     
         ?>
     </div>
