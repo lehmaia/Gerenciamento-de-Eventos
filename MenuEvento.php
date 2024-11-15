@@ -1,4 +1,22 @@
-<?php
+<?php 
+    include_once("database/conn.php");
+    $detalhes = filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
+
+    $sqlDetalhes = "SELECT * FROM eventos WHERE id = $detalhes";
+    $resultDetalhes = $conn->query($sqlDetalhes);
+
+    if($resultDetalhes->num_rows > 0)
+    {
+        while($detalhesEvento = $resultDetalhes->fetch_array())
+        {
+            $titulo = $detalhesEvento['nome'];
+            $status = $detalhesEvento['status'];
+            $tipo = $detalhesEvento['tipo'];
+            $data_criacao = $detalhesEvento['data_criacao'];
+        }
+    }
+
+    //da agenda CONFERIR
 // Incluir a conexão com o banco de dados
 include_once ('database/conn.php');
 
@@ -17,7 +35,7 @@ if(isset($_POST['data'])){
     if($conn->query($sql)==TRUE)
     {
         //echo "Dados inseridos com sucesso na agenda";
-        header("Location: Agenda.php");
+        header("Location: MenuEvento.php");
         exit();  // Importante para garantir que o script pare por aqui
     }
     else
@@ -29,23 +47,17 @@ if(isset($_POST['data'])){
 
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="img/IconeLogo.png" />
     <title>Quartzo Azul</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="MenuEvento.css">
 </head>
-
 <body>
     <!-- Header -->
     <?php include 'Header.php'; ?>
     <header class="titulo">
         <div class="left-icons">
-            <!-- Ícone de calendário -->
-            <button id="calendar-icon">📅</button>
-            <!-- Ícone de adicionar -->
             <button id="add-icon">+</button>
         </div>
         <div class="right-controls">
@@ -54,24 +66,6 @@ if(isset($_POST['data'])){
             <button id="next-day">→</button>
         </div>
     </header>
-
-    <!-- Calendário do mês (tela sobreposta) -->
-    <div id="full-calendar" class="calendar-overlay">
-        <div class="calendar-header">
-            <button id="prev-month">←</button>
-            <span id="calendar-month"></span>
-            <button id="next-month">→</button>
-        </div>
-        <div class="calendar-grid">
-            <!-- Dias da semana -->
-            <div class="calendar-weekdays">
-                <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
-            </div>
-            <!-- Dias do mês -->
-            <div id="calendar-days"></div>
-        </div>
-        <button id="close-calendar">✖</button>
-    </div>
 
     <!-- Tela para adicionar agendamentos -->
      <div id="idmodal" class="modal">

@@ -1,0 +1,128 @@
+body {
+    font-family: 'Poly', sans-serif;
+    background-color: #e0f7fa;
+}
+
+.pesquisa {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: transparent;
+    padding: 15px;
+}
+
+.pesquisa input {
+    width: 200px;
+    padding: 5px;
+}
+
+.btn-criar {
+    padding: 10px 30px;
+    background-color: #486591;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-criar:hover{
+    background-color: #96c4de;
+    outline: 1px solid;
+    transform: translateY(-3px) translateX(-3px);
+}
+
+.titulo {
+    padding-left: 20px;
+    color: #486591;
+}
+
+.grid-container {
+    text-decoration: none;
+    padding-left: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 20px 20px 20px 0;
+}
+
+
+.eventos{
+    text-decoration: none;
+    padding: 10px;
+    background-color: #486591;
+    border-radius: 8px 8px 0 0 ;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    width: 100%;
+    opacity: 90%;
+}
+
+.evento {
+    text-decoration: none;
+    padding: 0;
+    height: 140px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.evento:hover {
+    background-color: #486591;
+    transform: translateY(-5px);
+}
+
+.andamento {
+    background-color: #96c4de;
+}
+
+.concluido {
+    background-color: #d6e6f3;
+}
+
+.evento-icon {
+    font-size: 20px;
+    padding: 2px;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 100%;
+}
+
+/* Estilos para o botão de criar novo evento */
+.criar-novo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: 2px dashed #486591;
+    border-radius: 8px;
+    color: #486591;
+    text-decoration: none;
+    padding: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.criar-novo:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-5px);
+}
+
+.criar-icone {
+    font-size: 50px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.criar-texto {
+    font-size: 18px;
+}

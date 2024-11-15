@@ -6,11 +6,23 @@ if(isset($_POST['email']))
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $senha = $_POST['senha'];
-    // $ddd = $_POST['DDD'];
     $telefone = $_POST['telefone'];
 
+    // Inserir dados no banco de dados
+    $sql = "INSERT INTO Usuario (nome, email, senha, telefone) VALUES (?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssss", $nome, $email, $senha, $telefone);
+
+    if ($stmt->execute()) {
+        $user_id = $stmt->insert_id;
+        header("Location: upload_foto.php?id=$user_id");
+        exit;
+    } else {
+        echo "<script>alert('Falha ao cadastrar usuário');</script>";
+    }
+
     //Inserindo dados na Primeira Tabela
-    $sql1 = "INSERT INTO Usuario (nome,email,senha,telefone)
+    /*$sql1 = "INSERT INTO Usuario (nome,email,senha,telefone)
     VALUES ('$nome','$email','$senha','$telefone')";
 
     if($conn->query($sql1)==TRUE)
@@ -29,7 +41,7 @@ if(isset($_POST['email']))
         echo 'alert("Falha ao cadastrar usuário!");';
         echo 'window.location.href ="";';
         echo '</script>';
-    }
+    }*/
     
 }
 else

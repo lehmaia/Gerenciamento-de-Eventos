@@ -1,11 +1,14 @@
 <?php
+// Verificar se o usuário está logado
+if (!isset($_SESSION)) {
+    die("Você não pode acessar essa página porque não está logado. <p> <a href=\"Login.php\">Ir para o site</a> </p>");
+}
 
 // Inclui o arquivo de conexão ao banco de dados
 include("database/conn.php");
 
 // Obtém o ID do usuário da sessão da URL
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-//$id = 14;
 
 // Executa a consulta para obter as informações do usuário
 $sql = "SELECT * FROM usuario WHERE id = ?";
@@ -21,23 +24,19 @@ if ($result->num_rows > 0) {
     $email = $usuario['email'];
     $foto = !empty($usuario['foto']) ? $usuario['foto'] : 'Fotos/default.png';
 
-    /*Ainda tem que montar
+    //Ainda tem que montar
     // Consulta para eventos em andamento, ordenados por data de criação
     $sql_andamento = "SELECT * FROM eventos WHERE status = 'em_andamento' AND usuario_id = $id  ORDER BY data_criacao DESC";
     $result_andamento = $conn->query($sql_andamento);
     
     // Consulta para eventos concluídos, ordenados por data de criação
     $sql_concluido = "SELECT * FROM eventos WHERE status = 'concluido' AND usuario_id = $id ORDER BY data_criacao DESC";
-    $result_concluido = $conn->query($sql_concluido);*/
+    $result_concluido = $conn->query($sql_concluido);
     
 } else {
     die("Usuário não encontrado.");
 }
 
-// Verificar se o usuário está logado
-if (isset($_SESSION['id'])) {
-    die("Você não pode acessar essa página porque não está logado. <p> <a href=\"Login.php\">Ir para o site</a> </p>");
-}
 $stmt->close();
 $conn->close();
 ?>
@@ -49,7 +48,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="img/IconeLogo.png" />
     <title>Quartzo Azul</title>
-    <link rel="stylesheet" href="Header.css">
+    <script src="js/sweetalert.js" type="module"></script>
     <link rel="stylesheet" href="Header.css">
 </head>
 <body>
@@ -62,20 +61,6 @@ $conn->close();
 
         <!-- Menu de navegação -->
         <nav class="navbar">
-            <div class="dropdown">
-                <a href="Orcamento.php" class="dropbtn">Orçamento</a>
-                </div>
-            </div>
-            <div class="dropdown">
-                <button class="dropbtn">Convidados</button>
-                <div class="dropdown-content">
-                    <a href="#">Lista</a>
-                    <a href="#">Convite</a>
-                </div>
-            </div>
-            <div class="dropdown">
-                <a href="Agenda.php?id=<?php echo $id;?>" class="dropbtn">Agenda</a>
-            </div>
             <div class="dropdown">
                 <button class="dropbtn">Eventos</button>
                 <div class="dropdown-content">
@@ -91,14 +76,14 @@ $conn->close();
                 <div class="profile-content">
                     <span class="account-label">Conta</span>
                     <div class="profile-info">
-                    <img src="<?php echo $foto; ?>" alt="Foto do Usuário" class="profile-pic-small">
+                        <img src="<?php echo $foto; ?>" alt="Foto do Usuário" class="profile-pic-small">
                         <div>
                             <span class="user-name"><?php echo $nome;?></span>
                             <span class="user-email"><?php echo $email;?></span>
                         </div>
                     </div>
                     <hr>
-                    <a href="Perfil.php?id=<?php echo $id;?>">Perfil</a>
+                    <a href="Perfil.php?id=<?php echo $evento_id;?>">Perfil</a>
                     <a href="#">Mudar de Conta</a>
                     <a href="#">Configurações</a>
                     <a onclick="Sair()">

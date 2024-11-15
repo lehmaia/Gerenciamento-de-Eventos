@@ -4,7 +4,7 @@ const mainContainer = document.getElementById('main-container');
 const currentMonth = document.getElementById('current-month');
 const calendarIcon = document.getElementById('calendar-icon');
 const addIcon = document.getElementById('add-icon');
-const openAgendamento =document.getElementById('idmodal')
+const openAgendamento =document.getElementById('idmodal');
 const fullCalendar = document.getElementById('full-calendar');
 const closeCalendarBtn = document.getElementById('close-calendar');
 const calendarMonth = document.getElementById('calendar-month');
@@ -84,6 +84,24 @@ function selectDay(dayCard, date) {
     loadAppointmentsForselectedDate();
 }
 
+// Função para carregar os agendamentos para a data selecionada
+function loadAgendamentos() {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "Agenda.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    
+    // Envia a data selecionada como parâmetro
+    xhr.send("selectedDate=" + formatDate(selectedDate));
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            // Atualiza o container de agendamentos com a resposta
+            mainContainer.innerHTML = xhr.responseText;
+        }
+    };
+}
+
+
 // Navegação entre meses
 prevMonthBtn.onclick = () => {
     selectedDate.setMonth(selectedDate.getMonth() - 1);
@@ -116,3 +134,36 @@ addIcon.onclick = () => openAgendamento.style.display = 'flex';
 
 // Inicializar calendário e lista de dias
 loadDays();
+
+//Buscar endereço a partir do cep (tela criar evento)
+function buscarEndereco() {
+    const cep = document.getElementById("cep").value.replace(/\D/g, '');
+
+    // Verifica se o CEP tem 8 dígitos
+    if (cep.length !== 8) {
+        alert("CEP inválido!");
+        return;
+    }
+
+    // URL da API ViaCEP
+    const url = `https://viacep.com.br/ws/${cep}/json/`;
+
+    // Faz a requisição usando fetch
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.erro) {
+                alert("CEP não encontrado!");
+                return;
+            }
+
+            // Preenche os campos com os dados retornados pela API
+            document.getElementById("cidade").value = data.localidade;
+            document.getElementById("rua").value = data.logradouro;
+            document.getElementById("bairro").value = data.bairro;
+        })
+        .catch(error => {
+            console.error("Erro ao buscar o CEP:", error);
+            alert("Erro ao buscar o CEP. Tente novamente.");
+        });
+}

@@ -29,9 +29,12 @@ if(isset($_POST['email']) || isset($_POST['senha']))
                 session_start();
             }
 
-            $_SESSION['id'] = $usuario['id'];
+            $id = $usuario['id'];
+            echo "<script>
+                    localStorage.setItem('userId', '$userId');
+                </script>";
 
-            header("Location: Agenda.php");
+            header("Location: MenuPrincipal.php?id=$id");
         }
         else
         {
