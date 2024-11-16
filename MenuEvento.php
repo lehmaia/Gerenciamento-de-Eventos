@@ -1,48 +1,20 @@
 <?php 
     include_once("database/conn.php");
-    $detalhes = filter_input(INPUT_GET, "id", FILTER_SANITIZE_NUMBER_INT);
 
-    $sqlDetalhes = "SELECT * FROM eventos WHERE id = $detalhes";
-    $resultDetalhes = $conn->query($sqlDetalhes);
+    //$idEvento = $_GET['id_evento'];
 
-    if($resultDetalhes->num_rows > 0)
-    {
-        while($detalhesEvento = $resultDetalhes->fetch_array())
-        {
-            $titulo = $detalhesEvento['nome'];
-            $status = $detalhesEvento['status'];
-            $tipo = $detalhesEvento['tipo'];
-            $data_criacao = $detalhesEvento['data_criacao'];
-        }
+    function getCards($conn, $listId) {
+        $stmt = $conn->prepare("SELECT id, text FROM cards WHERE list_id = ?");
+        $stmt->bind_param("i", $listId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $cards = $result->fetch_all(MYSQLI_ASSOC);
+        return $cards;
     }
-
-    //da agenda CONFERIR
-// Incluir a conexão com o banco de dados
-include_once ('database/conn.php');
-
-// Verificar se os dados foram enviados
-if(isset($_POST['data'])){
-    // Receber os dados do formulário
-    $titulo = $_POST['titulo'];
-    $data = $_POST['data'];
-    $hora_inicio = $_POST['inicio'];
-    $hora_fim = $_POST['fim'];
-
-    // Preparar a query para inserir os dados na tabela 'agenda'
-    $sql = "INSERT INTO agenda (titulo, dia, hora_inicio, hora_fim) 
-              VALUES ('$titulo', '$data', '$hora_inicio', '$hora_fim')";
-
-    if($conn->query($sql)==TRUE)
-    {
-        //echo "Dados inseridos com sucesso na agenda";
-        header("Location: MenuEvento.php");
-        exit();  // Importante para garantir que o script pare por aqui
-    }
-    else
-    {
-        //echo "Erro ao inserir dados na agenda";
-    }
-}
+    
+    $todoCards = getCards($conn, 1);
+    $inProgressCards = getCards($conn, 2);
+    $doneCards = getCards($conn, 3);    
 ?>
 
 <!DOCTYPE html>
@@ -55,76 +27,59 @@ if(isset($_POST['data'])){
 </head>
 <body>
     <!-- Header -->
-    <?php include 'Header.php'; ?>
-    <header class="titulo">
-        <div class="left-icons">
-            <button id="add-icon">+</button>
-        </div>
-        <div class="right-controls">
-            <span id="current-month"></span>
-            <button id="prev-day">←</button>
-            <button id="next-day">→</button>
-        </div>
+    <header>
+        <?php include 'Header.php'; ?>
     </header>
 
-    <!-- Tela para adicionar agendamentos -->
-     <div id="idmodal" class="modal">
-        <div class="modal-content">
-
-            <form id="agendamento" method="POST">
-               <h3 style="color: #486591;">Adicionar Agendamento</h3>
-               
-               <label>Título:</label>
-               <input id="titulo" type="text" name="titulo" placeholder="Digite o titulo do agendamento" required>
-   
-               <label>Data:</label>
-               <input id="data" type="date" name="data" required>
-               
-               <label>Horário de Início:</label>
-               <input id="inicio" type="time" name="inicio" required>
-               
-               <label>Horário de Término:</label>
-               <input id="fim" type="time" name="fim" required>
-               
-               <input type="submit" value="Salvar" name="salvar" id="button"></input>
-               <button id="close-calendar">✖</button>
-            </form>
+    <main>
+        <h3 class="titulo">Tarefas</h3>
+        <div class="board-container">
+            <div class="board-column" id="todo">
+            <h3 class="board-title">A Fazer</h3>
+            <div class="card-list" id="todo-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <?php foreach ($todoCards as $card): ?>
+                    <div class="card" id="card-<?= $card['id']; ?>" draggable="true" ondragstart="drag(event)">
+                        <?= htmlspecialchars($card['text']); ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <button class="add-card-btn" onclick="showAddCardForm('todo')">+ Adicionar Cartão</button>
         </div>
-     </div>
-
-    <!-- Corpo da página com dias e agendamentos -->
-    <div id="days-container"></div>
-    <div id="main-container">
-        <?php
-                // Preparar a consulta para buscar os agendamentos somente daquele dia
-                $sql = "SELECT titulo, hora_inicio, hora_fim FROM agenda";
-                $result = $conn->query($sql);
-            
-                // Verificar se há resultados
-                if ($result && $result->num_rows > 0) {
-                    // Loop para exibir cada evento
-                    while ($row = $result->fetch_assoc()) {
-                        // Formatar os horários para exibir apenas hora e minutos
-                        $hora_inicio_formatada = date("H:i", strtotime($row["hora_inicio"]));
-                        $hora_fim_formatada = date("H:i", strtotime($row["hora_fim"]));
-
-                        echo '<div class="evento-container">';
-                        echo '<div class="evento-titulo">' . htmlspecialchars($row["titulo"]) . '</div>';
-                        echo '<div class="evento-horarios">';
-                        echo '<div class="evento-horario">Início: ' . $hora_inicio_formatada . '</div>';
-                        echo '<div class="evento-horario">Término: ' . $hora_fim_formatada . '</div>';
-                        echo '</div>';
-                        echo '</div>';
-                    }
-                } else {
-                    echo "<p>Nenhum evento encontrado.</p>";
-                }
+        
+        <div class="board-column" id="in-progress">
+            <h3 class="board-title">Em Progresso</h3>
+            <div class="card-list" id="in-progress-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <?php foreach ($inProgressCards as $card): ?>
+                    <div class="card" id="card-<?= $card['id']; ?>" draggable="true" ondragstart="drag(event)">
+                        <?= htmlspecialchars($card['text']); ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <button class="add-card-btn" onclick="showAddCardForm('in-progress')">+ Adicionar Cartão</button>
+        </div>
+        
+        <div class="board-column" id="done">
+            <h3 class="board-title">Concluído</h3>
+            <div class="card-list" id="done-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <?php foreach ($doneCards as $card): ?>
+                    <div class="card" id="card-<?= $card['id']; ?>" draggable="true" ondragstart="drag(event)">
+                        <?= htmlspecialchars($card['text']); ?>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+            <button class="add-card-btn" onclick="showAddCardForm('done')">+ Adicionar Cartão</button>
+        </div>
     
-        ?>
-    </div>
+        </div>
+    
+        <div id="add-card-form" class="add-card-form">
+            <input type="text" id="card-text" placeholder="Digite o nome do cartão">
+            <button onclick="addCard()">Adicionar</button>
+            <button onclick="closeAddCardForm()">Cancelar</button>
+        </div>
+    </main>
 
-    <!-- Scripts -->
-    <script src="script.js"></script>
+    <script src="MenuEvento.js"></script>
 </body>
 
 </html>

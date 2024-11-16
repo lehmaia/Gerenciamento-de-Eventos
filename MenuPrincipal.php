@@ -57,7 +57,7 @@ if(!isset($_GET['id']))
             <?php while($row = $result_andamento->fetch_assoc()): 
                 $evento_id = $row['id']; 
             ?>
-                <a href="MenuEvento.php?id=<?php echo $evento_id;?>" class="evento andamento">
+                <a href="MenuEvento.php?id=<?php echo $id;?>&id_evento=<?php echo $evento_id;?>" class="evento andamento">
                     <div class="eventos">
                         <div class="evento-nome"><?= $row['nome']; ?></div>
                     </div>
