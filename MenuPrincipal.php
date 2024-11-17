@@ -71,15 +71,17 @@ if(!isset($_GET['id']))
         <h2 class="titulo">Eventos passados</h2>
         <div class="grid-container">
             <!-- Exibindo os eventos concluídos -->
-            <?php while($row = $result_concluido->fetch_assoc()): ?>
-                <div class="evento concluido">
-                    <div class="eventos">
-                        <div class="evento-nome"><?= $row['nome']; ?></div>
-                    </div>
-                    <div class="evento-icon">
-                        <?= $row['tipo'] == 'publico' ? '👥' : '🔒'; ?>
-                    </div>
+            <?php while($row = $result_concluido->fetch_assoc()):
+                $evento_id = $row['id']; 
+            ?>
+            <a href="MenuEvento.php?id=<?php echo $id;?>&id_evento=<?php echo $evento_id;?>" class="evento concluido">
+                <div class="eventos">
+                    <div class="evento-nome"><?= $row['nome']; ?></div>
                 </div>
+                <div class="evento-icon">
+                    <?= $row['tipo'] == 'publico' ? '👥' : '🔒'; ?>
+                </div>
+            </a>
             <?php endwhile; ?>
         </div>
     </main>

@@ -1,5 +1,10 @@
 let currentList = '';
 
+function getIdFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id_evento');  // Pega o valor de "id" na URL
+    return id;
+}
 function showAddCardForm(listId) {
     currentList = listId;
     document.getElementById('add-card-form').style.display = 'block';
@@ -19,6 +24,7 @@ function addCard() {
         closeAddCardForm();
     }
 }
+
 
 document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('dragstart', dragStart);
@@ -55,17 +61,31 @@ function dropCard(e) {
         // Obter o novo ID da lista
         const newListId = targetList.id.split('-')[0];
 
-        // Enviar a atualização para o servidor
-        fetch('Card.php', {
+        const eventoId = getIdFromUrl();
+
+        console.log('cardId:', cardId.split('-')[1]);
+        console.log('listId:', newListId); // Agora isso deve ser 1, 2 ou 3
+        console.log('eventoId:', eventoId);
+
+        fetch('Card.php?evento_id=' + eventoId, {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `cardId=${cardId.split('-')[1]}&listId=${newListId}`
-        }).then(response => response.text())
-          .then(data => console.log(data))
-          .catch(err => console.error('Erro:', err));
+            body: `cardId=${cardId.split('-')[1]}&listId=${newListId}&evento_id=${eventoId}`
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro na resposta da requisição');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+        })
+        .catch(err => {
+            console.error('Erro:', err);
+        });
     }
 }
-
 
 
 // Função para permitir que o item seja arrastado
@@ -92,9 +112,10 @@ function drop(ev) {
 
         // Determine o novo list_id com base na lista
         const listId = getListIdByHtmlId(targetList.id);
+        const eventoId = getIdFromUrl(); // Pega o evento_id da URL
 
         // Atualiza o list_id no banco de dados
-        fetch('Card.php', {
+        fetch('Card.php?evento_id=' + eventoId, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -141,29 +162,39 @@ document.addEventListener('DOMContentLoaded', function () {
     loadCards();
 });
 
-function loadCards() {
-    fetch('get_cards.php')
-        .then(response => response.json())
-        .then(data => {
-            data.forEach(card => {
-                // Cria o elemento de cartão
-                const cardElement = document.createElement('div');
-                cardElement.classList.add('card');
-                cardElement.id = 'card-' + card.id;
-                cardElement.textContent = card.text;
-                cardElement.setAttribute("draggable", "true");
-                cardElement.setAttribute("ondragstart", "drag(event)");
 
-                // Adiciona o cartão à lista correspondente
-                const listId = card.list_id;
-                const listElement = document.getElementById(getListIdByNumber(listId));
-                if (listElement) {
-                    listElement.querySelector('.card-list').appendChild(cardElement);
-                }
-            });
+function loadCards() {
+    const eventoId = getIdFromUrl();
+
+    fetch('get_cards.php?evento_id=' + eventoId) 
+        .then(response => response.json()) // Garante que a resposta seja tratada como JSON
+        .then(data => {
+            console.log('Resposta do servidor:', data);
+            if (Array.isArray(data)) {
+                const filteredCards = data.filter(card => card.evento_id == eventoId);
+                filteredCards.forEach(card => {
+                    const cardElement = document.createElement('div');
+                    cardElement.classList.add('card');
+                    cardElement.id = 'card-' + card.id;
+                    cardElement.textContent = card.text;
+                    cardElement.setAttribute("draggable", "true");
+                    cardElement.setAttribute("ondragstart", "drag(event)");
+
+                    const listId = card.list_id;
+                    const listElement = document.getElementById(getListIdByNumber(listId));
+                    if (listElement) {
+                        listElement.querySelector('.card-list').appendChild(cardElement);
+                    }
+                });
+            } else {
+                console.error("A resposta não é um array:", data);
+            }
         })
         .catch(error => console.error('Erro ao carregar os cartões:', error));
 }
+
+
+
 
 // Função para converter o número da lista em ID da lista HTML
 function getListIdByNumber(listId) {
@@ -182,24 +213,23 @@ function getListIdByNumber(listId) {
 function addCard() {
     const cardText = document.getElementById('card-text').value;
     const listId = currentList === 'todo' ? 1 : currentList === 'in-progress' ? 2 : 3;
+    const eventoId = getIdFromUrl();  // Pega o evento_id da URL
 
     if (cardText.trim() !== '') {
-        fetch('Card.php', {
+        fetch('Card.php?evento_id=' + eventoId, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `cardText=${encodeURIComponent(cardText)}&listId=${listId}`
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `cardText=${encodeURIComponent(cardText)}&listId=${listId}&evento_id=${eventoId}`  // Envia o evento_id junto com os dados do cartão
         })
-        .then(response => response.json())
+        .then(response => response.json())  // Assegura que a resposta será tratada como JSON
         .then(data => {
             if (data.cardId) {
                 const card = document.createElement('div');
                 card.classList.add('card');
                 card.id = 'card-' + data.cardId;
                 card.textContent = data.text;
-                card.setAttribute("draggable", "true");
-                card.setAttribute("ondragstart", "drag(event)");
+                card.setAttribute('draggable', 'true');
+                card.setAttribute('ondragstart', 'dragStart(event)');
 
                 document.getElementById(currentList + '-list').appendChild(card);
                 closeAddCardForm();

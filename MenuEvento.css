@@ -148,3 +148,18 @@ body {
     padding: 10px;
     transition: background-color 0.2s ease-in-out;
 }
+
+/* Estilo para o botão "x" */
+.delete-card {
+    background: none;
+    border: none;
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 10px; /* Espaçamento para separar do texto do cartão */
+    font-size: 18px;
+}
+
+.delete-card:hover {
+    color: darkred; /* Cor quando passar o mouse sobre o botão */
+}

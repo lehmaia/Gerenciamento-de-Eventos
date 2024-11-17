@@ -1,20 +1,20 @@
 <?php 
     include_once("database/conn.php");
 
-    //$idEvento = $_GET['id_evento'];
+    $eventoId = $_GET['id_evento'];
 
-    function getCards($conn, $listId) {
-        $stmt = $conn->prepare("SELECT id, text FROM cards WHERE list_id = ?");
-        $stmt->bind_param("i", $listId);
+    function getCards($conn, $listId, $eventoId) {
+        $stmt = $conn->prepare("SELECT id, text FROM cards WHERE list_id = ? AND evento_id = ?");
+        $stmt->bind_param("ii", $listId, $eventoId);
         $stmt->execute();
         $result = $stmt->get_result();
         $cards = $result->fetch_all(MYSQLI_ASSOC);
         return $cards;
     }
     
-    $todoCards = getCards($conn, 1);
-    $inProgressCards = getCards($conn, 2);
-    $doneCards = getCards($conn, 3);    
+    $todoCards = getCards($conn, 1, $eventoId);
+    $inProgressCards = getCards($conn, 2, $eventoId);
+    $doneCards = getCards($conn, 3, $eventoId);   
 ?>
 
 <!DOCTYPE html>
@@ -81,5 +81,4 @@
 
     <script src="MenuEvento.js"></script>
 </body>
-
 </html>
