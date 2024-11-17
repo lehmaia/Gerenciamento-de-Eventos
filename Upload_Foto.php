@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <body>
     <div class="container">
         <h2>Envie sua Foto de Perfil</h2>
-        <form action="upload_foto.php?id=<?php echo $user_id; ?>" method="post" enctype="multipart/form-data">
+        <form action="Upload_foto.php?id=<?php echo $user_id; ?>" method="post" enctype="multipart/form-data">
             <img id="preview" src="uploads/default.png" alt="Prévia da Imagem">
             <input type="file" name="foto" id="foto" accept="image/*" onchange="previewImagem()" required><br>
             <button type="submit">Salvar Foto</button>

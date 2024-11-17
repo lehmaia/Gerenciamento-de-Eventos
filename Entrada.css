@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400&display=swap');
-
 *{
     padding: 0;
     margin: 0;
@@ -121,8 +119,8 @@ body
 }
 
 .input-box input{
-    margin: 1rem 0rem 1.5rem;
-    padding: 0.6rem 11rem 0.8rem 0.5rem;
+    padding: 0.5rem;
+    width: 300px;
     border: none;
     border-radius: 10px;
     box-shadow: 1px 1px 6px #0000001c;

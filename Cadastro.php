@@ -20,29 +20,6 @@ if(isset($_POST['email']))
     } else {
         echo "<script>alert('Falha ao cadastrar usuário');</script>";
     }
-
-    //Inserindo dados na Primeira Tabela
-    /*$sql1 = "INSERT INTO Usuario (nome,email,senha,telefone)
-    VALUES ('$nome','$email','$senha','$telefone')";
-
-    if($conn->query($sql1)==TRUE)
-    {
-        //echo "Dados inseridos com sucesso na tabela2";
-        echo '<script type="text/javascript">';
-        //depois tirar o echo abaixo
-        echo 'alert("Usuário cadastrado com sucesso!");';
-        // mandar para a tela de menu: echo 'window.location.href =".php";';
-        echo '</script>';
-    }
-    else
-    {
-        //echo "Erro ao inserir dados na tebala2";
-        echo '<script type="text/javascript">';
-        echo 'alert("Falha ao cadastrar usuário!");';
-        echo 'window.location.href ="";';
-        echo '</script>';
-    }*/
-    
 }
 else
 {

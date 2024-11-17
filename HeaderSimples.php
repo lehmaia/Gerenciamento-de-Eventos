@@ -63,11 +63,6 @@ $conn->close();
         <nav class="navbar">
             <div class="dropdown">
                 <button class="dropbtn">Eventos</button>
-                <div class="dropdown-content">
-                    <a href="#">Opção 1</a>
-                    <a href="#">Opção 2</a>
-                    <a href="#">Opção 3</a>
-                </div>
             </div>
 
             <!-- Foto de perfil com dropdown -->
@@ -83,8 +78,8 @@ $conn->close();
                         </div>
                     </div>
                     <hr>
-                    <a href="Perfil.php?id=<?php echo $evento_id;?>">Perfil</a>
-                    <a href="#">Mudar de Conta</a>
+                    <a href="Perfil.php?id=<?php echo $id;?>">Perfil</a>
+                    <a href="Login.php">Mudar de Conta</a>
                     <a href="#">Configurações</a>
                     <a onclick="Sair()">
                         <button>
