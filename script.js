@@ -80,7 +80,10 @@ function loadDays() {
         dayCard.className = 'day-card';
         dayCard.textContent = formatDate(date);
 
-        if (i === 0) dayCard.classList.add('selected');
+        if (i === 0){
+            dayCard.classList.add('selected');
+            loadAgendamentos(); // Chama automaticamente para o primeiro dia carregado
+        }
         dayCard.onclick = () => selectDay(dayCard, date);
 
         daysContainer.appendChild(dayCard);
