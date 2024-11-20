@@ -1,41 +1,51 @@
 <?php
 include 'database/conn.php';
 
-// Verifica se os dados foram enviados via POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Verifica se as variáveis existem e não estão vazias
-    if (isset($_POST['cardText']) && isset($_POST['listId']) && isset($_POST['evento_id'])) {
-        $cardText = $_POST['cardText'];
-        $listId = $_POST['listId'];
-        $eventoId = $_POST['evento_id']; // Recebe o evento_id da requisição POST
-
-        // Verifica se os valores são válidos
-        if (!empty($cardText) && isset($listId) && isset($eventoId)) {
-            // Prepara a consulta SQL para inserir o cartão no banco de dados
-            $stmt = $conn->prepare("INSERT INTO cards (text, list_id, evento_id) VALUES (?, ?, ?)");
-            $stmt->bind_param("sii", $cardText, $listId, $eventoId);
+    // Verifica se os parâmetros obrigatórios estão presentes
+    if (isset($_POST['listId'], $_POST['evento_id'])) {
+        $listId = intval($_POST['listId']);
+        $eventoId = intval($_POST['evento_id']);
+        
+        // Verifica se os valores não estão vazios
+        if (!empty($listId) && !empty($eventoId)) {
+            // Se `cardId` está presente, é uma atualização; caso contrário, é uma inserção
+            if (!empty($_POST['cardId'])) {
+                $cardId = intval($_POST['cardId']);
+                // Atualização do cartão existente
+                $stmt = $conn->prepare("UPDATE cards SET list_id = ? WHERE id = ? AND evento_id = ?");
+                $stmt->bind_param("iii", $listId, $cardId, $eventoId);
+            } else {
+                // Inserção de um novo cartão
+                if (isset($_POST['cardText']) && !empty($_POST['cardText'])) {
+                    $cardText = $_POST['cardText'];
+                    $stmt = $conn->prepare("INSERT INTO cards (text, list_id, evento_id) VALUES (?, ?, ?)");
+                    $stmt->bind_param("sii", $cardText, $listId, $eventoId);
+                } else {
+                    echo json_encode(['error' => 'Faltando cardText para criar novo cartão']);
+                    exit;
+                }
+            }
             
             if ($stmt->execute()) {
-                // Retorna os dados do cartão adicionado (incluindo o ID gerado)
-                $newCardId = $stmt->insert_id;
+                // Retorna o ID do novo cartão ou sucesso na atualização
                 echo json_encode([
-                    'cardId' => $newCardId,
-                    'text' => $cardText
+                    'success' => true,
+                    'cardId' => $cardId ?: $stmt->insert_id
                 ]);
             } else {
-                echo json_encode(['error' => 'Erro ao adicionar o cartão']);
+                echo json_encode(['error' => 'Erro ao executar a consulta: ' . $stmt->error]);
             }
-
-            // Fecha a declaração e a conexão
             $stmt->close();
         } else {
-            echo json_encode(['error' => 'Dados inválidos']);
+            echo json_encode(['error' => 'Dados inválidos ou incompletos']);
         }
     } else {
         echo json_encode(['error' => 'Faltando dados obrigatórios']);
     }
+} else {
+    echo json_encode(['error' => 'Método não permitido']);
 }
 
 $conn->close();
-
 ?>

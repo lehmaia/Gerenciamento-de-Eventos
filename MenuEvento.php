@@ -34,6 +34,7 @@ $conn->close(); // Fechar a conexão com o banco após o uso
 <head>
     <meta charset="UTF-8">
     <link rel="shortcut icon" type="image/x-icon" href="img/IconeLogo.png" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Quartzo Azul</title>
     <link rel="stylesheet" href="MenuEvento.css">
 </head>
