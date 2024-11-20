@@ -31,8 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->bind_param("si", $caminhoDestino, $user_id);
             $stmt->execute();
 
-            // Redirecionar para a página de perfil
-            header("Location: MenuPrincipal.php?id=$user_id");
+            // Redirecionar para a página de login
+            header("Location: Login.php?");
             exit;
         } else {
             echo "Erro ao fazer o upload.";
