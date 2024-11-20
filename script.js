@@ -16,10 +16,22 @@ const nextDayBtn = document.getElementById('next-day');
 
 let selectedDate = new Date();
 
-// Função para formatar a data (dd/mm/yyyy)
-function formatDate(date) {
-    return `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+function getIdsFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id'); // Pega o valor do parâmetro "id"
+    const idEvento = urlParams.get('id_evento'); // Pega o valor do parâmetro "id_evento"
+    return { id, idEvento };
 }
+
+// Função para formatar a data (dd.mm.yyyy)
+function formatDate(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`; // Formato dd.mm.yyyy
+}
+
+
 
 // Função para carregar o calendário mensal
 function loadMonthCalendar(date) {
@@ -86,13 +98,21 @@ function selectDay(dayCard, date) {
 
 // Função para carregar os agendamentos para a data selecionada
 function loadAgendamentos() {
+    const { id, idEvento } = getIdsFromUrl(); // Obtém os IDs da URL atual
+
+    // Verifique se os parâmetros id e id_evento existem antes de prosseguir
+    if (!id || !idEvento) {
+        alert("ID do usuário ou ID do evento inválido.");
+        return;
+    }
+
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", "Agenda.php", true);
+    xhr.open("POST", `Agenda.php?id=${id}&id_evento=${idEvento}`, true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    
-    // Enviar a data selecionada como parâmetro
+
+    // Enviar a data selecionada como parâmetro (garantindo o formato correto)
     xhr.send("selectedDate=" + formatDate(selectedDate));
-    
+
     xhr.onload = function() {
         if (xhr.status === 200) {
             // Atualizar o container de eventos com a resposta do PHP
@@ -100,6 +120,7 @@ function loadAgendamentos() {
         }
     };
 }
+
 
 function selectDay(dayCard, date) {
     document.querySelectorAll('.day-card').forEach(card => card.classList.remove('selected'));

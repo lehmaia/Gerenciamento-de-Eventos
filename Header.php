@@ -6,6 +6,7 @@ include("database/conn.php");
 // Obtém o ID do usuário da sessão da URL
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 //$id = 14;
+$evento_id = isset($_GET['id_evento']) ? (int)$_GET['id_evento'] : 0;
 
 // Executa a consulta para obter as informações do usuário
 $sql = "SELECT * FROM usuario WHERE id = ?";
@@ -74,7 +75,7 @@ $conn->close();
                 </div>
             </div>
             <div class="dropdown">
-                <a href="Agenda.php?id=<?php echo $id;?>" class="dropbtn">Agenda</a>
+                <a href="Agenda.php?id=<?php echo $id;?>&id_evento=<?php echo $evento_id;?>" class="dropbtn">Agenda</a>
             </div>
             <div class="dropdown">
                 <button class="dropbtn">Eventos</button>

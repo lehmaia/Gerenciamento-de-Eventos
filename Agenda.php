@@ -2,28 +2,99 @@
 if (!empty($_GET['id']) && is_numeric($_GET['id'])) {
     include_once("database/conn.php");
 
-    $evento_id = isset($_GET['id']) ? (int)$_GET['id'] : 0; // Pega o ID do evento logado
+    $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    $evento_id = isset($_GET['id_evento']) ? (int)$_GET['id_evento'] : 0; // Pega o ID do evento logado
 
-    // Verifica o ID
-    //echo "ID do evento: " . $evento_id;
+    // Verificar se os dados foram enviados via POST
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_POST['selectedDate']) && !empty($_POST['selectedDate'])) {
+            $selectedDate = $_POST['selectedDate']; // A data recebida via POST
 
-// Verificar se os dados foram enviados
-if(isset($_POST['data'])){
-    // Receber os dados do formulário
-    $titulo = $_POST['titulo'];
-    $data = $_POST['data'];
-    $hora_inicio = $_POST['inicio'];
-    $hora_fim = $_POST['fim'];
+            // Tente converter a data para o formato 'Y-m-d' (ano-mês-dia)
+            $formattedDate = DateTime::createFromFormat('d.m.Y', $selectedDate);
+            if ($formattedDate) {
+                // Formatar corretamente para Y-m-d
+                $formattedDate = $formattedDate->format('Y-m-d');
 
-    // Usando prepared statement para evitar SQL Injection
-        $stmt = $conn->prepare("INSERT INTO agenda (titulo, dia, hora_inicio, hora_fim, evento_id) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssi", $titulo, $data, $hora_inicio, $hora_fim, $evento_id);
+                // Usando prepared statement para evitar injeção de SQL
+                if ($conn) {
+                    $sql = "SELECT titulo, hora_inicio, hora_fim FROM agenda WHERE dia = ?";
+                    $stmt = $conn->prepare($sql);
 
-        if ($stmt->execute()) {
-            header("Location: Agenda.php?id=$evento_id");
+                    if ($stmt) {
+                        // Vincular o parâmetro (data formatada) ao prepared statement
+                        $stmt->bind_param('s', $formattedDate); // 's' indica que o parâmetro é uma string
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+
+                        // Exibir os eventos encontrados
+                        if ($result && $result->num_rows > 0) {
+                            while ($row = $result->fetch_assoc()) {
+                                $hora_inicio_formatada = date("H:i", strtotime($row["hora_inicio"]));
+                                $hora_fim_formatada = date("H:i", strtotime($row["hora_fim"]));
+
+                                echo '<div class="evento-container">';
+                                echo '<div class="evento-titulo">' . htmlspecialchars($row["titulo"]) . '</div>';
+                                echo '<div class="evento-horarios">';
+                                echo '<div class="evento-horario">Início: ' . $hora_inicio_formatada . '</div>';
+                                echo '<div class="evento-horario">Término: ' . $hora_fim_formatada . '</div>';
+                                echo '</div>';
+                                echo '</div>';
+                            }
+                        } else {
+                            echo "<p>Nenhum evento encontrado para essa data.</p>";
+                        }
+
+                        // Fechar o prepared statement
+                        $stmt->close();
+                    } else {
+                        echo "Erro na preparação da consulta: " . $conn->error;
+                    }
+                }
+            } else {
+                echo "<p>Formato de data inválido ou data não fornecida.</p>";
+            }
+
+            // Finaliza a execução do script, impedindo o carregamento do restante da página
             exit();
-        } else {
-            echo "Erro ao criar evento: " . $conn->error;
+        }
+
+        // Lógica para adicionar evento (caso você tenha o formulário)
+        if (isset($_POST['titulo'], $_POST['data'], $_POST['inicio'], $_POST['fim'])) {
+            $titulo = $_POST['titulo'];
+            $data = $_POST['data'];
+            $hora_inicio = $_POST['inicio'];
+            $hora_fim = $_POST['fim'];
+
+            // Usando prepared statement para evitar SQL Injection
+            if ($conn) {
+                $stmt = $conn->prepare("INSERT INTO agenda (titulo, dia, hora_inicio, hora_fim, evento_id) VALUES (?, ?, ?, ?, ?)");
+                if ($stmt) {
+                    $stmt->bind_param("ssssi", $titulo, $data, $hora_inicio, $hora_fim, $evento_id);
+                    if ($stmt->execute()) {
+                        // Redirecionar para a mesma página (pode ser ajustado conforme necessário)
+                        header("Location: Agenda.php?id=$id&id_evento=$evento_id");
+                        exit();
+                    } else {
+                        echo "Erro ao criar evento: " . $conn->error;
+                    }
+                    $stmt->close(); // Fechar o statement após execução
+                } else {
+                    echo "Erro na preparação da consulta: " . $conn->error;
+                }
+            } else {
+                echo "Erro de conexão com o banco de dados.";
+            }
+        }
+
+    } else {
+        // Lógica para carregar a página normalmente
+        if (isset($_GET['id_evento']) && !empty($_GET['id_evento'])) {
+            // Carregar todos os eventos relacionados ao evento específico
+            $evento_id = $_GET['id_evento'];
+
+            // Exibir todos os eventos para o evento_id
+            // (implementação pode ser semelhante à lógica de carregar eventos pela data)
         }
     }
 } else {
@@ -106,38 +177,6 @@ if(isset($_POST['data'])){
     <!-- Corpo da página com dias e agendamentos -->
     <div id="days-container"></div>
     <div id="main-container">
-        <?php
-        // Verificar se a data foi recebida via POST
-        if (isset($_POST['selectedDate'])) {
-            $selectedDate = $_POST['selectedDate'];
-            
-            // Formatando a data para o formato do banco de dados (Y-m-d)
-            $selectedDate = DateTime::createFromFormat('d.m.Y', $selectedDate)->format('Y-m-d');
-            
-            // Consulta para buscar eventos na data selecionada
-            $sql = "SELECT titulo, hora_inicio, hora_fim FROM agenda WHERE dia = '$selectedDate'";
-            $result = $conn->query($sql);
-            
-            // Verificar se há eventos e exibi-los
-            if ($result && $result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $hora_inicio_formatada = date("H:i", strtotime($row["hora_inicio"]));
-                    $hora_fim_formatada = date("H:i", strtotime($row["hora_fim"]));
-        
-                    echo '<div class="evento-container">';
-                    echo '<div class="evento-titulo">' . htmlspecialchars($row["titulo"]) . '</div>';
-                    echo '<div class="evento-horarios">';
-                    echo '<div class="evento-horario">Início: ' . $hora_inicio_formatada . '</div>';
-                    echo '<div class="evento-horario">Término: ' . $hora_fim_formatada . '</div>';
-                    echo '</div>';
-                    echo '</div>';
-                }
-            } else {
-                echo "<p>Nenhum evento encontrado para essa data.</p>";
-            }
-        }
-    
-        ?>
     </div>
 
     <!-- Scripts -->

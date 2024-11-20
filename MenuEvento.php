@@ -1,20 +1,20 @@
 <?php 
     include_once("database/conn.php");
 
-    $eventoId = $_GET['id_evento'];
+    $id_evento = isset($_GET['id_evento']) ? (int)$_GET['id_evento'] : 0;
 
-    function getCards($conn, $listId, $eventoId) {
+    function getCards($conn, $listId, $id_evento) {
         $stmt = $conn->prepare("SELECT id, text FROM cards WHERE list_id = ? AND evento_id = ?");
-        $stmt->bind_param("ii", $listId, $eventoId);
+        $stmt->bind_param("ii", $listId, $id_evento);
         $stmt->execute();
         $result = $stmt->get_result();
         $cards = $result->fetch_all(MYSQLI_ASSOC);
         return $cards;
     }
     
-    $todoCards = getCards($conn, 1, $eventoId);
-    $inProgressCards = getCards($conn, 2, $eventoId);
-    $doneCards = getCards($conn, 3, $eventoId);   
+    $todoCards = getCards($conn, 1, $id_evento);
+    $inProgressCards = getCards($conn, 2, $id_evento);
+    $doneCards = getCards($conn, 3, $id_evento);   
 ?>
 
 <!DOCTYPE html>
