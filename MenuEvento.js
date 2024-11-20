@@ -108,7 +108,7 @@ function drop(ev) {
 
     const targetList = ev.target.closest('.card-list');
     if (targetList) {
-        targetList.appendChild(draggedCard); // Adiciona o cartão na nova lista
+        ev.target.appendChild(draggedCard); // Adiciona o cartão na nova lista
 
         // Determine o novo list_id com base na lista
         const listId = getListIdByHtmlId(targetList.id);

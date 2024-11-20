@@ -24,7 +24,6 @@ if ($result->num_rows > 0) {
     $email = $usuario['email'];
     $foto = !empty($usuario['foto']) ? $usuario['foto'] : 'Fotos/default.png';
 
-    //Ainda tem que montar
     // Consulta para eventos em andamento, ordenados por data de criação
     $sql_andamento = "SELECT * FROM eventos WHERE status = 'em_andamento' AND usuario_id = $id  ORDER BY data_criacao DESC";
     $result_andamento = $conn->query($sql_andamento);
@@ -55,14 +54,18 @@ $conn->close();
     <header class="header">
         <!-- Logo e nome da empresa -->
         <div class="logo-container">
-            <img src="img/IconeLogo.png" alt="Logo" class="logo">
-            <span class="company-name">Quartzo Azul</span>
+            <a href="MenuPrincipal.php?id=<?php echo $id; ?>">
+                <img src="img/IconeLogo.png" alt="Logo" class="logo">
+            </a>
+            <a href="MenuPrincipal.php?id=<?php echo $id; ?>">
+                <span class="company-name">Quartzo Azul</span>
+            </a>
         </div>
 
         <!-- Menu de navegação -->
         <nav class="navbar">
             <div class="dropdown">
-                <button class="dropbtn">Eventos</button>
+                <button class="dropbtn" onclick="window.location.href='MenuPrincipal.php?id=<?php echo $id; ?>'">Eventos</button>
             </div>
 
             <!-- Foto de perfil com dropdown -->
@@ -80,7 +83,6 @@ $conn->close();
                     <hr>
                     <a href="Perfil.php?id=<?php echo $id;?>">Perfil</a>
                     <a href="Login.php">Mudar de Conta</a>
-                    <a href="#">Configurações</a>
                     <a onclick="Sair()">
                         <button>
                             Sair

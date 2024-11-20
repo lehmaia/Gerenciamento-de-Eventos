@@ -1,11 +1,14 @@
 <?php
+// Verificar se o usuário está logado
+if (!isset($_SESSION['id'])) {
+    die("Você não pode acessar essa página porque não está logado. <p> <a href=\"Login.php\">Ir para o site</a> </p>");
+}
 
 // Inclui o arquivo de conexão ao banco de dados
 include("database/conn.php");
 
 // Obtém o ID do usuário da sessão da URL
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-//$id = 14;
 $evento_id = isset($_GET['id_evento']) ? (int)$_GET['id_evento'] : 0;
 
 // Executa a consulta para obter as informações do usuário
@@ -21,24 +24,10 @@ if ($result->num_rows > 0) {
     $nome = $usuario['nome'];
     $email = $usuario['email'];
     $foto = !empty($usuario['foto']) ? $usuario['foto'] : 'Fotos/default.png';
-
-    /*Ainda tem que montar
-    // Consulta para eventos em andamento, ordenados por data de criação
-    $sql_andamento = "SELECT * FROM eventos WHERE status = 'em_andamento' AND usuario_id = $id  ORDER BY data_criacao DESC";
-    $result_andamento = $conn->query($sql_andamento);
-    
-    // Consulta para eventos concluídos, ordenados por data de criação
-    $sql_concluido = "SELECT * FROM eventos WHERE status = 'concluido' AND usuario_id = $id ORDER BY data_criacao DESC";
-    $result_concluido = $conn->query($sql_concluido);*/
-    
 } else {
     die("Usuário não encontrado.");
 }
 
-// Verificar se o usuário está logado
-if (isset($_SESSION['id'])) {
-    die("Você não pode acessar essa página porque não está logado. <p> <a href=\"Login.php\">Ir para o site</a> </p>");
-}
 $stmt->close();
 $conn->close();
 ?>
@@ -50,41 +39,41 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" type="image/x-icon" href="img/IconeLogo.png" />
     <title>Quartzo Azul</title>
-    <link rel="stylesheet" href="Header.css">
+    <script src="js/sweetalert.js" type="module"></script>
     <link rel="stylesheet" href="Header.css">
 </head>
 <body>
     <header class="header">
         <!-- Logo e nome da empresa -->
         <div class="logo-container">
-            <img src="img/IconeLogo.png" alt="Logo" class="logo">
-            <span class="company-name">Quartzo Azul</span>
+        <a href="MenuPrincipal.php?id=<?php echo $id; ?>">
+                <img src="img/IconeLogo.png" alt="Logo" class="logo">
+            </a>
+            <a href="MenuPrincipal.php?id=<?php echo $id; ?>">
+                <span class="company-name">Quartzo Azul</span>
+            </a>
         </div>
 
         <!-- Menu de navegação -->
         <nav class="navbar">
-            <div class="dropdown">
+            <!--<div class="dropdown">
                 <a href="Orcamento.php" class="dropbtn">Orçamento</a>
-                </div>
+                </div>-->
             </div>
             <div class="dropdown">
-                <button class="dropbtn">Convidados</button>
-                <div class="dropdown-content">
+                <a href="ListaConvidados.php?id=<?php echo $id;?>&id_evento=<?php echo $evento_id;?>" class="dropbtn">Convidados</a>
+                <!--<div class="dropdown-content">
                     <a href="#">Lista</a>
                     <a href="#">Convite</a>
-                </div>
+                </div>-->
             </div>
             <div class="dropdown">
                 <a href="Agenda.php?id=<?php echo $id;?>&id_evento=<?php echo $evento_id;?>" class="dropbtn">Agenda</a>
             </div>
             <div class="dropdown">
-                <button class="dropbtn">Eventos</button>
-                <div class="dropdown-content">
-                    <a href="#">Opção 1</a>
-                    <a href="#">Opção 2</a>
-                    <a href="#">Opção 3</a>
-                </div>
+                <button class="dropbtn" onclick="window.location.href='MenuEvento.php?id=<?php echo $id; ?>&id_evento=<?php echo $evento_id; ?>'">Evento Atual</button>
             </div>
+
 
             <!-- Foto de perfil com dropdown -->
             <div class="profile-dropdown">
@@ -100,9 +89,8 @@ $conn->close();
                     </div>
                     <hr>
                     <a href="Perfil.php?id=<?php echo $id;?>">Perfil</a>
-                    <a href="#">Mudar de Conta</a>
-                    <a href="#">Configurações</a>
-                    <a onclick="Sair()">
+                    <a href="Login.php">Mudar de Conta</a>
+                    <a href="#" onclick="Sair()">
                         <button>
                             Sair
                         </button>

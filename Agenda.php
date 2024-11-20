@@ -1,4 +1,5 @@
 <?php
+session_start();
 if (!empty($_GET['id']) && is_numeric($_GET['id'])) {
     include_once("database/conn.php");
 
@@ -18,7 +19,7 @@ if (!empty($_GET['id']) && is_numeric($_GET['id'])) {
 
                 // Usando prepared statement para evitar injeção de SQL
                 if ($conn) {
-                    $sql = "SELECT titulo, hora_inicio, hora_fim FROM agenda WHERE dia = ?";
+                    $sql = "SELECT titulo, hora_inicio, hora_fim FROM agenda WHERE dia = ? ORDER BY hora_inicio ASC";
                     $stmt = $conn->prepare($sql);
 
                     if ($stmt) {

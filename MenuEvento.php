@@ -1,21 +1,33 @@
-<?php 
-    include_once("database/conn.php");
+<?php
+session_start(); // Deve ser chamado no início do arquivo, antes de qualquer HTML ou include
 
-    $id_evento = isset($_GET['id_evento']) ? (int)$_GET['id_evento'] : 0;
+// Verificar se o usuário está logado
+if (!isset($_SESSION['id'])) {
+    // Se não estiver logado, exibe a mensagem de erro e redireciona
+    die("Você não pode acessar essa página porque não está logado. <p><a href='Login.php'>Ir para o site</a></p>");
+}
 
-    function getCards($conn, $listId, $id_evento) {
-        $stmt = $conn->prepare("SELECT id, text FROM cards WHERE list_id = ? AND evento_id = ?");
-        $stmt->bind_param("ii", $listId, $id_evento);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $cards = $result->fetch_all(MYSQLI_ASSOC);
-        return $cards;
-    }
-    
-    $todoCards = getCards($conn, 1, $id_evento);
-    $inProgressCards = getCards($conn, 2, $id_evento);
-    $doneCards = getCards($conn, 3, $id_evento);   
+include_once("database/conn.php");
+
+$id_evento = isset($_GET['id_evento']) ? (int)$_GET['id_evento'] : 0;
+
+function getCards($conn, $listId, $id_evento) {
+    $stmt = $conn->prepare("SELECT id, text FROM cards WHERE list_id = ? AND evento_id = ?");
+    $stmt->bind_param("ii", $listId, $id_evento);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $cards = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close(); // Fechar o statement após o uso
+    return $cards;
+}
+
+$todoCards = getCards($conn, 1, $id_evento);
+$inProgressCards = getCards($conn, 2, $id_evento);
+$doneCards = getCards($conn, 3, $id_evento);
+
+$conn->close(); // Fechar a conexão com o banco após o uso
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-br">
