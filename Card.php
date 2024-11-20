@@ -29,9 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             if ($stmt->execute()) {
                 // Retorna o ID do novo cartão ou sucesso na atualização
+                $newCardId = isset($cardId) && $cardId > 0 ? $cardId : $stmt->insert_id;
                 echo json_encode([
                     'success' => true,
-                    'cardId' => $cardId ?: $stmt->insert_id
+                    'cardId' => $newCardId,
+                    'text' => $cardText // Adiciona o texto do cartão na resposta
                 ]);
             } else {
                 echo json_encode(['error' => 'Erro ao executar a consulta: ' . $stmt->error]);

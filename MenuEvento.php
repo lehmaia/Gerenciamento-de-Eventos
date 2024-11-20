@@ -37,6 +37,8 @@ $conn->close(); // Fechar a conexão com o banco após o uso
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Quartzo Azul</title>
     <link rel="stylesheet" href="MenuEvento.css">
+    <!-- CSS dos icones -->
+    <link flex href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
 </head>
 <body>
     <!-- Header -->
@@ -53,6 +55,7 @@ $conn->close(); // Fechar a conexão com o banco após o uso
                 <?php foreach ($todoCards as $card): ?>
                     <div class="card" id="card-<?= $card['id']; ?>" draggable="true" ondragstart="drag(event)">
                         <?= htmlspecialchars($card['text']); ?>
+                        <button class="delete-card" onclick="deleteCard('card-<?= $card['id']; ?>')"><i class="bx bx-x"></i></button>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -65,6 +68,7 @@ $conn->close(); // Fechar a conexão com o banco após o uso
                 <?php foreach ($inProgressCards as $card): ?>
                     <div class="card" id="card-<?= $card['id']; ?>" draggable="true" ondragstart="drag(event)">
                         <?= htmlspecialchars($card['text']); ?>
+                        <button class="delete-card" onclick="deleteCard('card-<?= $card['id']; ?>')"><i class="bx bx-x"></i></button>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -77,6 +81,7 @@ $conn->close(); // Fechar a conexão com o banco após o uso
                 <?php foreach ($doneCards as $card): ?>
                     <div class="card" id="card-<?= $card['id']; ?>" draggable="true" ondragstart="drag(event)">
                         <?= htmlspecialchars($card['text']); ?>
+                        <button class="delete-card" onclick="deleteCard('card-<?= $card['id']; ?>')"><i class="bx bx-x"></i></button>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -86,7 +91,7 @@ $conn->close(); // Fechar a conexão com o banco após o uso
         </div>
     
         <div id="add-card-form" class="add-card-form">
-            <input type="text" id="card-text" placeholder="Digite o nome do cartão">
+            <input type="text" id="card-text" placeholder="Digite o nome da tarefa">
             <button onclick="addCard()">Adicionar</button>
             <button onclick="closeAddCardForm()">Cancelar</button>
         </div>
