@@ -61,7 +61,7 @@ $conn->close();
                 </div>-->
             </div>
             <div class="dropdown">
-                <a href="ListaConvidados.php?id=<?php echo $id;?>&id_evento=<?php echo $evento_id;?>" class="dropbtn">Convidados</a>
+                <a href="convidados.php?id=<?php echo $id;?>&id_evento=<?php echo $evento_id;?>" class="dropbtn">Convidados</a>
                 <!--<div class="dropdown-content">
                     <a href="#">Lista</a>
                     <a href="#">Convite</a>
@@ -71,7 +71,7 @@ $conn->close();
                 <a href="Agenda.php?id=<?php echo $id;?>&id_evento=<?php echo $evento_id;?>" class="dropbtn">Agenda</a>
             </div>
             <div class="dropdown">
-                <button class="dropbtn" onclick="window.location.href='MenuEvento.php?id=<?php echo $id; ?>&id_evento=<?php echo $evento_id; ?>'">Evento Atual</button>
+                <a class="dropbtn" onclick="window.location.href='MenuEvento.php?id=<?php echo $id; ?>&id_evento=<?php echo $evento_id; ?>'">Evento Atual</button>
             </div>
 
 
@@ -91,9 +91,7 @@ $conn->close();
                     <a href="Perfil.php?id=<?php echo $id;?>">Perfil</a>
                     <a href="Login.php">Mudar de Conta</a>
                     <a href="#" onclick="Sair()">
-                        <button>
                             Sair
-                        </button>
                         </a>
                 </div>
             </div>

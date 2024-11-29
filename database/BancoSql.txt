@@ -71,3 +71,14 @@ CREATE TABLE cards (
 INSERT INTO lists (name) VALUES ('A Fazer');
 INSERT INTO lists (name) VALUES ('Em Progresso');
 INSERT INTO lists (name) VALUES ('Concluído');
+
+CREATE TABLE convidados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_evento INT NOT NULL, -- Relacionado a um evento
+    nome VARCHAR(255) NOT NULL, -- Nome do convidado
+    contato VARCHAR(100), -- Contato do convidado (telefone, e-mail, etc.)
+    convite_enviado BOOLEAN DEFAULT 0, -- Indica se o convite foi enviado
+    presenca_confirmada BOOLEAN DEFAULT 0, -- Indica se a presença foi confirmada
+    data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Registro de quando foi adicionado
+    FOREIGN KEY (id_evento) REFERENCES eventos(id) ON DELETE CASCADE
+);

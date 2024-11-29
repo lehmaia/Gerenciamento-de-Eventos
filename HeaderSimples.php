@@ -83,11 +83,7 @@ $conn->close();
                     <hr>
                     <a href="Perfil.php?id=<?php echo $id;?>">Perfil</a>
                     <a href="Login.php">Mudar de Conta</a>
-                    <a onclick="Sair()">
-                        <button>
-                            Sair
-                        </button>
-                        </a>
+                    <a onclick="Sair()">Sair</a>
                 </div>
             </div>
         </nav>

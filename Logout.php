@@ -9,6 +9,6 @@ session_unset();
 session_destroy();
 
 // Redirecionar o usuário para a página de login ou para a página inicial
-header("Location: Login.php");
+header("Location: index.php");
 exit(); // Garante que o script pare após o redirecionamento
 ?>
